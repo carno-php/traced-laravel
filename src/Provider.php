@@ -24,6 +24,10 @@ class Provider extends ServiceProvider
      */
     public function boot()
     {
+        if (env('COMPOSER_BINARY')) {
+            return;
+        }
+
         if (is_null($endpoint = config('devops.tracing.addr'))) {
             return;
         }
@@ -31,7 +35,7 @@ class Provider extends ServiceProvider
         // init webTracing
 
         $this->app->singleton(WebTracing::class, static function ($app) {
-            return new WebTracing($app['config']->get('devops.tracking.named', 'laravel-app'));
+            return new WebTracing($app['config']->get('devops.tracing.named', 'laravel-app'));
         });
 
         // middleware injects
