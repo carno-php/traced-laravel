@@ -62,6 +62,7 @@ class SQLTracing
                     TAG::DATABASE_INSTANCE => sprintf('%s:%d', $host, $port),
                     TAG::DATABASE_USER => sprintf('%s@%s', $user, $name),
                     TAG::DATABASE_STATEMENT => $executed->sql,
+                    EXT::LOCAL_ENDPOINT => new Endpoint($this->app),
                     EXT::REMOTE_ENDPOINT => new Endpoint($this->app, new Address($host, $port)),
                 ],
                 [],
