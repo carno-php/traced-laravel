@@ -51,11 +51,9 @@ class WebTracing
      */
     public function handle($request, Closure $next)
     {
-        $ctx = $this->create($request);
+        $ctx = CTXG::assign($this->create($request));
+
         try {
-            /**
-             * @var Response
-             */
             if (($response = $next($request))->exception) {
                 return $this->failure($ctx, $response->exception, $response);
             } else {
@@ -64,6 +62,8 @@ class WebTracing
         } catch (Throwable $e) {
             $this->failure($ctx, $e);
             throw $e;
+        } finally {
+            CTXG::release();
         }
     }
 
@@ -140,8 +140,8 @@ class WebTracing
      */
     private function psr2response(ResponseInterface $p, Response $r) : void
     {
-        foreach ($p->getHeaders() as $name => $values) {
-            $r->headers->set($name, $values);
+        foreach ($p->getHeaders() as $name => $value) {
+            $r->headers->set($name, $value);
         }
     }
 }
