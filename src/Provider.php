@@ -19,6 +19,27 @@ class Provider extends ServiceProvider
 {
     /**
      */
+    public function register()
+    {
+        // tracing app
+
+        $named = config('devops.tracing.named', 'laravel-app');
+
+        // web tracking
+
+        $this->app->singleton(WebTracing::class, static function () use ($named) {
+            return new WebTracing($named);
+        });
+
+        // sql tracking
+
+        $this->app->singleton(SQLTracing::class, static function () use ($named) {
+            return new SQLTracing($named);
+        });
+    }
+
+    /**
+     */
     public function boot()
     {
         // pre checks
@@ -41,20 +62,6 @@ class Provider extends ServiceProvider
             $app->starting()->perform();
             $app->conf()->set('tracing.addr', $endpoint);
         }
-
-        $named = config('devops.tracing.named', 'laravel-app');
-
-        // web tracking
-
-        $this->app->singleton(WebTracing::class, static function () use ($named) {
-            return new WebTracing($named);
-        });
-
-        // sql tracking
-
-        $this->app->singleton(SQLTracing::class, static function () use ($named) {
-            return new SQLTracing($named);
-        });
 
         // init components
 
