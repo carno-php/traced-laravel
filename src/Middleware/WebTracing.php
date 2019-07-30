@@ -17,10 +17,10 @@ use Carno\Tracing\Contracts\Vars\TAG;
 use Carno\Tracing\Standard\Endpoint;
 use Carno\Tracing\Utils\SpansCreator;
 use Carno\Tracing\Utils\SpansExporter;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Closure;
 use Throwable;
 
@@ -82,9 +82,9 @@ class WebTracing
                 TAG::SPAN_KIND => TAG::SPAN_KIND_RPC_SERVER,
                 TAG::HTTP_URL => $r->getUri(),
                 TAG::HTTP_METHOD => $r->getMethod(),
-                TAG::USER_AGENT => $r->userAgent(),
-                EXT::LOCAL_ENDPOINT => new Endpoint($this->app, new Address($r->server('SERVER_ADDR'), $r->getPort())),
-                EXT::REMOTE_ENDPOINT => new Endpoint($this->app, new Address($r->getClientIp(), $r->server('REMOTE_PORT'))),
+                TAG::USER_AGENT => $r->headers->get('User-Agent'),
+                EXT::LOCAL_ENDPOINT => new Endpoint($this->app, new Address($r->server->get('SERVER_ADDR'), $r->getPort())),
+                EXT::REMOTE_ENDPOINT => new Endpoint($this->app, new Address($r->getClientIp(), $r->server->get('REMOTE_PORT'))),
             ],
             [],
             FMT::HTTP_HEADERS,
@@ -140,6 +140,8 @@ class WebTracing
      */
     private function psr2response(ResponseInterface $p, Response $r) : void
     {
-        $r->withHeaders($p->getHeaders());
+        foreach ($p->getHeaders() as $name => $values) {
+            $r->headers->set($name, $values);
+        }
     }
 }

@@ -6,6 +6,9 @@
     "carno-php/console": "~2.0",
     "carno-php/traced": "~2.0"
   },
+  "require-dev": {
+    "laravel/framework": "^5.5"
+  },
   "autoload": {
     "psr-4": {
       "Carno\\Laravel\\Tracing\\": "src"
