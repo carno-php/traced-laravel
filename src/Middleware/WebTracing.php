@@ -130,7 +130,7 @@ class WebTracing
         return new \Carno\HTTP\Standard\Request(
             $r->getMethod(),
             new Uri($r->getScheme(), $r->getHost(), $r->getPort(), $r->getPathInfo(), $r->getQueryString()),
-            (array) $r->headers
+            (array) $r->headers->all()
         );
     }
 
